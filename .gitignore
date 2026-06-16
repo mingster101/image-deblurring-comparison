@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.log
+
+# Virtual environments
+venv/
+.venv/
+
+# Pretrained weights (too large for git — download links in README)
+webapp/weights/*.pth

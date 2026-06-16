@@ -35,10 +35,21 @@ Penelitian ini membandingkan tiga model deep learning untuk task **motion deblur
 │   ├── kadid10k_analysis.py           # Analisis & visualisasi hasil KADID-10k
 │   ├── unsharp_mask.py                # Baseline unsharp mask
 │   └── lilscript.py                   # Utility script
-└── scripts/
-    ├── evaluate_laplacian.py          # Evaluasi ketajaman berbasis Laplacian
-    ├── diffusion_test.py              # Eksperimen diffusion model
-    └── app.py                         # Aplikasi demo inference
+├── scripts/
+│   ├── evaluate_laplacian.py          # Evaluasi ketajaman berbasis Laplacian
+│   ├── diffusion_test.py              # Eksperimen diffusion model
+│   └── app.py                         # Skrip eksperimen kecil (bukan website)
+└── webapp/                            # Website demo perbandingan ketiga model
+    ├── app.py                         # Flask server & API (/api/predict, /api/predict_all)
+    ├── config.py                      # Konfigurasi path repo model & bobot
+    ├── requirements.txt
+    ├── SETUP.md                       # Panduan instalasi & menjalankan website
+    ├── run.bat
+    ├── models/                        # Wrapper inference per model (Restormer, Real-ESRGAN, DiffIR)
+    ├── utils/metrics.py                # Metrik ketajaman (Laplacian variance)
+    ├── templates/index.html
+    ├── static/{css,js}/
+    └── weights/                       # Taruh file .pth di sini (lihat tabel Pretrained Models)
 ```
 
 ---
@@ -85,4 +96,22 @@ Pretrained weights yang digunakan sebagai titik awal fine-tuning:
 - **PSNR** (Peak Signal-to-Noise Ratio) — lebih tinggi lebih baik
 - **SSIM** (Structural Similarity Index) — lebih tinggi lebih baik
 - **LPIPS** (Learned Perceptual Image Patch Similarity) — lebih rendah lebih baik
+
+---
+
+## Website Demo
+
+Folder [`webapp/`](webapp/) berisi aplikasi web (Flask) untuk mendemonstrasikan ketiga model secara interaktif: upload gambar buram, pilih model (atau bandingkan ketiganya sekaligus via `/api/predict_all`), dan lihat hasil deblurring beserta skor ketajaman (Laplacian variance).
+
+Cara menjalankan:
+
+```bat
+cd webapp
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+```
+
+Lalu buka **http://localhost:5000**. Bobot model (`.pth`) harus diunduh manual ke `webapp/weights/` — lihat tabel [Pretrained Models](#pretrained-models) di atas. Panduan lengkap ada di [`webapp/SETUP.md`](webapp/SETUP.md).
 

@@ -1,0 +1,13 @@
+# ── Core (required) ──────────────────────────────────────────────────────────
+flask>=3.0
+Pillow>=10.0
+numpy>=1.24
+opencv-python-headless>=4.8
+
+# ── Deep learning (required for model inference) ──────────────────────────────
+torch>=2.0            # install via pytorch.org for CUDA support
+torchvision>=0.15
+
+# ── Model-specific ────────────────────────────────────────────────────────────
+basicsr>=1.4.2        # needed by Restormer arch + Real-ESRGAN
+realesrgan>=0.3.0     # Real-ESRGAN inference helper

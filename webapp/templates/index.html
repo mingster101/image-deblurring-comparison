@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Deblurring – Restormer vs Real-ESRGAN vs DiffIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <div>
+        <h1 class="header-title">Image Deblurring</h1>
+        <p class="header-sub">Restormer &nbsp;·&nbsp; Real-ESRGAN &nbsp;·&nbsp; DiffIR &nbsp;|&nbsp; GoPro Dataset</p>
+      </div>
+      <div class="status-row" id="statusRow">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main>
+  <div class="container">
+
+    <!-- Control panel: upload + model selection -->
+    <section class="panel control-panel">
+      <!-- Upload -->
+      <div class="upload-col">
+        <h2 class="section-title"><span class="step">1</span> Upload Blur Image</h2>
+
+        <div class="upload-zone" id="uploadZone">
+          <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p class="upload-main">Drag &amp; drop or <span class="upload-link">browse</span></p>
+          <p class="upload-hint">JPG · PNG · WEBP &nbsp;·&nbsp; Max 32 MB</p>
+          <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden />
+        </div>
+
+        <div class="preview-box" id="previewBox" style="display:none">
+          <img id="previewImg" alt="Preview" />
+          <button class="btn-remove" id="removeBtn" title="Remove image">&#x2715;</button>
+          <p class="preview-info" id="previewInfo"></p>
+        </div>
+      </div>
+
+      <!-- Model selection -->
+      <div class="model-col">
+        <h2 class="section-title"><span class="step">2</span> Choose Model</h2>
+
+        <div class="model-cards" role="radiogroup">
+
+          <label class="model-card" data-model="restormer">
+            <input type="radio" name="model" value="restormer" checked hidden />
+            <div class="model-badge badge-transformer">Transformer</div>
+            <div class="model-card-body">
+              <h3>Restormer</h3>
+              <p>Non-generative · High PSNR / SSIM · Stable reconstruction</p>
+              <span class="model-ref">Zamir et al., 2022</span>
+            </div>
+            <div class="model-status-dot" id="dot-restormer"></div>
+          </label>
+
+          <label class="model-card" data-model="realesrgan">
+            <input type="radio" name="model" value="realesrgan" hidden />
+            <div class="model-badge badge-gan">GAN</div>
+            <div class="model-card-body">
+              <h3>Real-ESRGAN</h3>
+              <p>Generative · Sharp textures · Perceptual quality</p>
+              <span class="model-ref">Wang et al., 2021</span>
+            </div>
+            <div class="model-status-dot" id="dot-realesrgan"></div>
+          </label>
+
+          <label class="model-card" data-model="diffir">
+            <input type="radio" name="model" value="diffir" hidden />
+            <div class="model-badge badge-diffusion">Diffusion</div>
+            <div class="model-card-body">
+              <h3>DiffIR</h3>
+              <p>Probabilistic · Natural detail recovery · State-of-the-art</p>
+              <span class="model-ref">Zheng et al., 2023</span>
+            </div>
+            <div class="model-status-dot" id="dot-diffir"></div>
+          </label>
+
+        </div>
+
+        <div class="action-row">
+          <button class="btn-primary" id="processBtn" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Process Image
+          </button>
+          <button class="btn-secondary" id="compareAllBtn" disabled>Compare All 3</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Single model result -->
+    <section class="panel result-panel" id="resultPanel" style="display:none">
+      <div class="result-header">
+        <h2 class="section-title" id="resultTitle">Result</h2>
+        <a class="btn-download" id="downloadBtn" download="deblurred.png">&#8595; Download</a>
+      </div>
+
+      <!-- Before / After slider -->
+      <div class="comparison-wrapper" id="comparisonWrapper">
+        <div class="comp-after">
+          <img id="afterImg" alt="Deblurred" />
+          <span class="comp-label label-after">After</span>
+        </div>
+        <div class="comp-before" id="compBefore">
+          <img id="beforeImg" alt="Blurred input" />
+          <span class="comp-label label-before">Before</span>
+        </div>
+        <div class="comp-divider" id="compDivider">
+          <div class="divider-handle"></div>
+        </div>
+      </div>
+      <p class="slider-hint">← Drag to compare →</p>
+
+      <!-- Metrics row -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-label">Blur Score (Input)</div>
+          <div class="metric-value" id="inScore">—</div>
+          <div class="metric-sub">Laplacian Variance</div>
+        </div>
+        <div class="metric-arrow">&#8594;</div>
+        <div class="metric-card metric-highlight">
+          <div class="metric-label">Blur Score (Output)</div>
+          <div class="metric-value" id="outScore">—</div>
+          <div class="metric-sub">Higher = Sharper</div>
+        </div>
+        <div class="metric-card metric-improve" id="improveCard">
+          <div class="metric-label">Improvement</div>
+          <div class="metric-value" id="improvement">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Inference Time</div>
+          <div class="metric-value" id="inferTime">—</div>
+          <div class="metric-sub">seconds</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- All-models comparison -->
+    <section class="panel all-panel" id="allPanel" style="display:none">
+      <h2 class="section-title">Model Comparison</h2>
+
+      <div class="all-grid" id="allGrid">
+        <!-- cards injected by JS -->
+      </div>
+
+      <div class="table-wrapper">
+        <table class="compare-table" id="compareTable">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Blur Score (In)</th>
+              <th>Blur Score (Out)</th>
+              <th>Improvement</th>
+              <th>Inference Time</th>
+            </tr>
+          </thead>
+          <tbody id="compareBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div><!-- /container -->
+</main>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <p id="loadingText">Processing…</p>
+  </div>
+</div>
+
+<script src="/static/js/main.js"></script>
+</body>
+</html>

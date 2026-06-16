@@ -570,9 +570,12 @@ def generate_insights(df, available_models, type_agg, level_agg, group_agg, over
         lines.append(f'\n  [{grp}]')
         for m in available_models:
             v = vals.get(m, np.nan)
+            ssim_v = group_agg[grp].get(f'{m}_ssim', np.nan)
+            lpips_v = group_agg[grp].get(f'{m}_lpips', np.nan)
             delta = group_agg[grp].get(f'{m}_delta_psnr', np.nan)
             indicator = ' ★' if m == best_in_grp else ''
-            lines.append(f'    {m:<15} PSNR={v:.4f}  ΔPSNR={delta:+.4f}{indicator}')
+            lines.append(f'    {m:<15} PSNR={v:.4f}  SSIM={ssim_v:.4f}  LPIPS={lpips_v:.4f}  '
+                         f'ΔPSNR={delta:+.4f}{indicator}')
 
     lines += ['']
 
@@ -589,10 +592,16 @@ def generate_insights(df, available_models, type_agg, level_agg, group_agg, over
         lines.append(f'\n  [{m}]')
         lines.append('    5 TIPE TERKUAT:')
         for t in top5:
-            lines.append(f'      - {DISTORTION_NAMES[t]:<22} PSNR={valid[t]:.4f}')
+            ssim_v = type_agg[t].get(f'{m}_ssim', np.nan)
+            lpips_v = type_agg[t].get(f'{m}_lpips', np.nan)
+            lines.append(f'      - {DISTORTION_NAMES[t]:<22} PSNR={valid[t]:.4f}  '
+                         f'SSIM={ssim_v:.4f}  LPIPS={lpips_v:.4f}')
         lines.append('    5 TIPE TERLEMAH:')
         for t in bot5:
-            lines.append(f'      - {DISTORTION_NAMES[t]:<22} PSNR={valid[t]:.4f}')
+            ssim_v = type_agg[t].get(f'{m}_ssim', np.nan)
+            lpips_v = type_agg[t].get(f'{m}_lpips', np.nan)
+            lines.append(f'      - {DISTORTION_NAMES[t]:<22} PSNR={valid[t]:.4f}  '
+                         f'SSIM={ssim_v:.4f}  LPIPS={lpips_v:.4f}')
 
     lines += ['']
 
@@ -606,8 +615,10 @@ def generate_insights(df, available_models, type_agg, level_agg, group_agg, over
             continue
         winner = max(valid, key=valid.get)
         win_count[winner] = win_count.get(winner, 0) + 1
+        ssim_v = type_agg[dt].get(f'{winner}_ssim', np.nan)
+        lpips_v = type_agg[dt].get(f'{winner}_lpips', np.nan)
         lines.append(f'  {DISTORTION_NAMES[dt]:<25} → {winner} '
-                     f'(PSNR={valid[winner]:.4f})')
+                     f'(PSNR={valid[winner]:.4f}, SSIM={ssim_v:.4f}, LPIPS={lpips_v:.4f})')
     lines += ['', '  Jumlah kemenangan per model:']
     for m, cnt in sorted(win_count.items(), key=lambda x: -x[1]):
         lines.append(f'    {m:<15} : {cnt} / {len(type_agg)} tipe distorsi')

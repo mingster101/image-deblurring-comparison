@@ -1,0 +1,39 @@
+name: Test_Restormer_GoPro
+model_type: ImageCleanModel
+scale: 1
+num_gpu: 1
+
+datasets:
+  test:
+    name: GoProTestSet
+    type: Dataset_PairedImage
+    dataroot_gt: ./Motion_Deblurring/Datasets/GOPRO_Large_flat/test/sharp
+    dataroot_lq: ./Motion_Deblurring/Datasets/GOPRO_Large_flat/test/blur
+    io_backend:
+      type: disk
+
+network_g:
+  type: Restormer
+  inp_channels: 3
+  out_channels: 3
+  dim: 48
+  num_blocks: [4,6,6,8]
+  num_refinement_blocks: 4
+  heads: [1,2,4,8]
+  ffn_expansion_factor: 2.66
+  bias: False
+  LayerNorm_type: WithBias
+  dual_pixel_task: False
+
+path:
+  pretrain_network_g: experiments/net_g_latest_Restormer.pth
+  results_root: C:\Users\MM-417\Desktop\Punyamingsterplsjgndisentuh\EksplorasiSkripsi\evaluation\results\Restormer
+
+train:
+  mixing_augs:
+    mixup: false
+    
+val:
+  save_img: true
+  rgb2bgr: true
+  use_image: true

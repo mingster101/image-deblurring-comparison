@@ -44,16 +44,19 @@ class RealESRGANModel(BaseModel):
                 )
 
             print('[Real-ESRGAN] Building network ...', flush=True)
+            # scale=1 matches the fine-tuning config (deblur only, no upscaling) —
+            # RRDBNet pixel-unshuffles the input 16x when scale=1, so conv_first
+            # expects 3*16=48 input channels instead of 3.
             net = RRDBNet(
                 num_in_ch=3, num_out_ch=3,
-                num_feat=64, num_block=23, num_grow_ch=32, scale=4,
+                num_feat=64, num_block=23, num_grow_ch=32, scale=1,
             )
 
             wname = os.path.basename(weights_path)
             print(f'[Real-ESRGAN] Loading weights from {wname} ...', flush=True)
             gpu_id = 0 if self.device == 'cuda' else None
             self.upsampler = RealESRGANer(
-                scale=4,
+                scale=1,
                 model_path=weights_path,
                 model=net,
                 tile=400,

@@ -3,10 +3,8 @@ Real-ESRGAN inference wrapper (scale x1 for deblurring, no upscaling).
 
 Install: pip install realesrgan basicsr
 
-Pre-trained weight: RealESRGAN_x4plus.pth  (we run it at scale=1)
-Download from:
-  https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth
-Place in: weights/RealESRGAN_x4plus.pth
+Fine-tuned weight (hasil training skripsi): Real-ESRGAN_latest.pth  (we run it at scale=1)
+Place in: weights/Real-ESRGAN_latest.pth
 """
 from __future__ import annotations
 import os
@@ -42,7 +40,7 @@ class RealESRGANModel(BaseModel):
             if not os.path.exists(weights_path):
                 raise FileNotFoundError(
                     f"Weights not found: {weights_path}\n"
-                    "Download RealESRGAN_x4plus.pth and place it in weights/"
+                    "Place Real-ESRGAN_latest.pth in weights/"
                 )
 
             print('[Real-ESRGAN] Building network ...', flush=True)

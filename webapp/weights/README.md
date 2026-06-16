@@ -1,5 +1,5 @@
-Place the following pretrained weight files here (see main README 'Pretrained Models' table for download links):
+Place the following fine-tuned weight files here (outputs of the training runs described in the main README):
 
-- motion_deblurring.pth
-- RealESRGAN_x4plus.pth
-- DiffIR-deblurring.pth
+- net_g_latest_Restormer.pth
+- Real-ESRGAN_latest.pth
+- DiffIR_deblur.pth

@@ -10,11 +10,10 @@ RESTORMER_REPO  = os.getenv('RESTORMER_REPO',  r'C:\Users\MM-417\Desktop\Punyami
 DIFFIR_REPO     = os.getenv('DIFFIR_REPO',     r'C:\Users\MM-417\Desktop\Punyamingsterplsjgndisentuh\EksplorasiSkripsi\DiffIR\DiffIR-demotionblur')
 REALESRGAN_REPO = os.getenv('REALESRGAN_REPO', r'')
 
-# === PRE-TRAINED WEIGHT FILES ===
-# Download these and place them in the weights/ folder.
-RESTORMER_WEIGHTS  = os.path.join(WEIGHTS_DIR, 'motion_deblurring.pth')
-REALESRGAN_WEIGHTS = os.path.join(WEIGHTS_DIR, 'RealESRGAN_x4plus.pth')
-DIFFIR_WEIGHTS     = os.path.join(WEIGHTS_DIR, 'DiffIR-deblurring.pth')
+# === FINE-TUNED WEIGHT FILES (hasil training skripsi) ===
+RESTORMER_WEIGHTS  = os.path.join(WEIGHTS_DIR, 'net_g_latest_Restormer.pth')
+REALESRGAN_WEIGHTS = os.path.join(WEIGHTS_DIR, 'Real-ESRGAN_latest.pth')
+DIFFIR_WEIGHTS     = os.path.join(WEIGHTS_DIR, 'DiffIR_deblur.pth')
 
 # === INFERENCE SETTINGS ===
 MAX_IMAGE_SIZE = 1280   # Resize longest edge to this before inference (saves VRAM)

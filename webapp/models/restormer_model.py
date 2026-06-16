@@ -1,10 +1,8 @@
 """
 Restormer inference wrapper.
 
-Pre-trained weight: motion_deblurring.pth
-Download from:
-  https://github.com/swz30/Restormer/releases/download/v1.0/motion_deblurring.pth
-Place in: weights/motion_deblurring.pth
+Fine-tuned weight (hasil training skripsi): net_g_latest_Restormer.pth
+Place in: weights/net_g_latest_Restormer.pth
 
 Model repo (needed for arch code):
   git clone https://github.com/swz30/Restormer
@@ -52,7 +50,7 @@ class RestormerModel(BaseModel):
             if not os.path.exists(weights_path):
                 raise FileNotFoundError(
                     f"Weights not found: {weights_path}\n"
-                    "Download motion_deblurring.pth and place it in weights/"
+                    "Place net_g_latest_Restormer.pth in weights/"
                 )
 
             print('[Restormer] Building network ...', flush=True)

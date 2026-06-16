@@ -1,10 +1,8 @@
 """
 DiffIR inference wrapper (DiffIR-S2 for motion deblurring).
 
-Pre-trained weight: DiffIR-deblurring.pth
-Download from:
-  https://github.com/Zj-BinXia/DiffIR  (releases or Google Drive link in repo README)
-Place in: weights/DiffIR-deblurring.pth
+Fine-tuned weight (hasil training skripsi): DiffIR_deblur.pth
+Place in: weights/DiffIR_deblur.pth
 
 Model repo needed for arch code:
   git clone https://github.com/Zj-BinXia/DiffIR
@@ -61,7 +59,7 @@ class DiffIRModel(BaseModel):
             if not os.path.exists(weights_path):
                 raise FileNotFoundError(
                     f"Weights not found: {weights_path}\n"
-                    "Download DiffIR-deblurring.pth and place it in weights/"
+                    "Place DiffIR_deblur.pth in weights/"
                 )
 
             print('[DiffIR] Building network ...', flush=True)
